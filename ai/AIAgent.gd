@@ -4,7 +4,6 @@ class_name AIAgent
 
 @export var use_external_ai: bool = true  # Use Python RL server vs built-in
 @export var ai_server_url: String = "http://localhost:8000"
-var ConfigManager
 @export var update_frequency: float = 0.1  # AI decisions per second
 
 var parent_probe: Probe
@@ -27,7 +26,6 @@ signal action_received(action: Array)
 signal reward_calculated(reward: float)
 
 func _ready():
-    ConfigManager = get_node("/root/ConfigManager")
     # Setup HTTP client for external AI
     if use_external_ai:
         http_request = HTTPRequest.new()
@@ -284,7 +282,7 @@ func _on_energy_critical(probe: Probe, energy_level: float):
     last_reward -= 0.2
 
 # Simple Q-Learning implementation for fallback
-class SimpleQLearning extends Node: # Corrected inner class definition
+class SimpleQLearning extends Node:
 
     var q_table: Dictionary = {}
     var learning_rate: float = 0.1

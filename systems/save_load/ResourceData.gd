@@ -1,6 +1,5 @@
-# ResourceData.gd
-extends Resource
 class_name ResourceData
+extends Resource
 
 @export var position: Vector2 = Vector2.ZERO
 @export var current_amount: float = 0.0

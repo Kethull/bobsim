@@ -1,10 +1,12 @@
 extends RigidBody2D
 class_name Probe
 
+const ConfigManager = preload("res://scripts/ConfigManager.gd")
+
 @export_group("Probe Properties")
 @export var probe_id: int = 0
 @export var generation: int = 0
-@export var probe_mass: float = 8.0
+# @export var mass: float = 8.0 # Mass is an inherent property of RigidBody2D
 
 @export_group("Energy System")
 @export var max_energy: float = 100000.0
@@ -353,9 +355,10 @@ func send_communication(target_position: Vector2, message_type: String):
     communication_sent.emit(self, target_position, message_type)
     
     # Create communication beam effect
-    var beam_effect = preload("res://effects/CommunicationBeam.tscn").instantiate()
-    get_tree().current_scene.add_child(beam_effect)
-    beam_effect.setup_beam(global_position, target_position)
+    # TODO: Create CommunicationBeam.tscn and uncomment the following lines
+    # var beam_effect = preload("res://effects/CommunicationBeam.tscn").instantiate()
+    # get_tree().current_scene.add_child(beam_effect)
+    # beam_effect.setup_beam(global_position, target_position)
 
 func get_observation_data() -> Dictionary:
     # Generate comprehensive observation data for AI

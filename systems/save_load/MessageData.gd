@@ -1,6 +1,5 @@
-# MessageData.gd
-extends Resource
 class_name MessageData
+extends Resource
 
 @export var sender_id: int = 0
 @export var message_type: String = ""

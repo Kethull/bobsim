@@ -1,6 +1,5 @@
-# ProbeData.gd
-extends Resource
 class_name ProbeData
+extends Resource
 
 @export var id: int = 0
 @export var generation: int = 0

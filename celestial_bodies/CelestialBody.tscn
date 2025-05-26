@@ -1,42 +1,38 @@
-[gd_scene load_steps=4 format=3 uid="uid://b5w5gqj3vqvqg"]
+[gd_scene load_steps=3 format=3 uid="uid://cstlbdy000001"]
 
-[ext_resource type="Script" path="res://celestial_bodies/CelestialBody.gd" id="1_abcde"]
+[ext_resource type="Script" path="res://celestial_bodies/CelestialBody.gd" id="1_script"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_1"]
-radius = 50.0
+[sub_resource type="CircleShape2D" id="CircleShape2D_body"]
+radius = 32.0 ; Placeholder: Value will be set by CelestialBody.gd _ready() from display_radius
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_2"]
-radius = 250.0 # Larger radius for gravity effects, assuming 5x display_radius
+[sub_resource type="CircleShape2D" id="CircleShape2D_grav"]
+radius = 200.0 ; Placeholder: Value for gravity influence, can be adjusted in script or editor
 
 [node name="CelestialBody" type="RigidBody2D"]
-script = ExtResource("1_abcde")
-display_radius = 50.0
+script = ExtResource("1_script")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource("CircleShape2D_1")
+shape = SubResource("CircleShape2D_body")
 
 [node name="VisualComponent" type="Node2D" parent="."]
 
 [node name="BodySprite" type="Sprite2D" parent="VisualComponent"]
-# Texture will be assigned later
+; Note: Assign texture in editor or via script if needed.
 
 [node name="AtmosphereGlow" type="Sprite2D" parent="VisualComponent"]
-# Texture and shader will be assigned later
+; Note: Assign texture in editor or via script if needed.
 
 [node name="StatusLights" type="Node2D" parent="VisualComponent"]
-# Visual indicators for active systems
 
 [node name="OrbitTrail" type="Line2D" parent="."]
 width = 2.0
-default_color = Color(0.5, 0.5, 0.5, 0.5) 
-# Points will be added by script
+default_color = Color(0.501961, 0.501961, 0.501961, 0.5)
 
 [node name="GravityField" type="Area2D" parent="."]
-collision_layer = 0 # Gravity field should not physically collide
-collision_mask = 2  # Detect probes (assuming probes are on layer 2)
+collision_layer = 0
+collision_mask = 0 ; Placeholder: Configure mask to detect relevant physics layers (e.g., probes).
 
 [node name="GravityShape" type="CollisionShape2D" parent="GravityField"]
-shape = SubResource("CircleShape2D_2")
+shape = SubResource("CircleShape2D_grav")
 
 [node name="AudioComponent" type="AudioStreamPlayer2D" parent="."]
-# AudioStream will be assigned later

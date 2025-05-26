@@ -202,8 +202,8 @@ func setup_camera():
     camera.zoom = Vector2.ONE * 0.1  # Start zoomed out
     
     # Setup smooth camera following
-    var camera_controller = preload("res://systems/CameraController.gd").new()
-    camera.add_child(camera_controller)
+    # var camera_controller = preload("res://systems/CameraController.gd").new() #TODO: Create CameraController.gd
+    # camera.add_child(camera_controller)
 
 func setup_ui():
     # Initialize UI panels with simulation data

@@ -1,9 +1,6 @@
+class_name SaveLoadManager
 # SaveLoadManager.gd (AutoLoad)
 extends Node
-
-const ProbeData = preload("res://systems/save_load/ProbeData.gd")
-const ResourceData = preload("res://systems/save_load/ResourceData.gd")
-const CelestialBodyData = preload("res://systems/save_load/CelestialBodyData.gd")
 
 var current_save_data: SimulationSaveData
 var autosave_enabled: bool = true
