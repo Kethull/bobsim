@@ -169,8 +169,7 @@ func _physics_process(_delta):
     # Update orbit trail
     update_orbit_trail()
     
-    # Check for probe interactions in gravity field
-    check_gravity_field_interactions()
+    # Removed call to check_gravity_field_interactions as probes now handle their own gravity
 
 func update_orbit_trail():
     orbit_points.append(global_position)
@@ -183,20 +182,6 @@ func update_orbit_trail():
     orbit_trail.clear_points()
     for point in orbit_points:
         orbit_trail.add_point(point)
-
-func check_gravity_field_interactions():
-    # Apply gravitational influence to probes in range
-    var bodies = gravity_field.get_overlapping_bodies()
-    for body in bodies:
-        if body is Probe:
-            var probe: Probe = body as Probe
-            var distance_vector = global_position - probe.global_position
-            var distance = distance_vector.length()
-            
-            if distance > 0:
-                var force_magnitude = ConfigManager.config.gravitational_constant * mass_kg * probe.mass / (distance * distance)
-                var force = distance_vector.normalized() * force_magnitude
-                probe.apply_external_force(force, "gravity_" + body_name)
 
 func find_central_body() -> CelestialBody:
     for body in get_tree().get_nodes_in_group("celestial_bodies"):

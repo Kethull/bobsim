@@ -1,5 +1,8 @@
-[gd_scene format=3 uid="res://effects/CommunicationBeam.tscn"]
+[gd_scene format=3 uid="uid://c0m1b2e3a4m5"]
 
 [node name="CommunicationBeam" type="Node2D"]
 
-[node name="Beam" type="Line2D" parent="."]
+[node name="Line2D" type="Line2D" parent="."]
+points = PackedVector2Array(0, 0, 50, 0)
+width = 3.0
+default_color = Color(0.5, 0.7, 1, 1)

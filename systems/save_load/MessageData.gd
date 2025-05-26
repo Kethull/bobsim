@@ -1,8 +1,8 @@
-class_name MessageData
 extends Resource
+class_name MessageData
 
-@export var sender_id: int = 0
-@export var message_type: String = ""
-@export var position: Vector2 = Vector2.ZERO
-@export var timestamp: int = 0
-@export var data: Dictionary = {}
+@export var sender_id: String = ""
+@export var receiver_id: String = ""
+@export var content: String = ""
+@export var timestamp: float = 0.0 # Using float for Time.get_unix_time_from_system()
+@export var message_type: String = "standard" # E.g., "standard", "alert", "discovery"

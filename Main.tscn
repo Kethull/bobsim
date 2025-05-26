@@ -1,8 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://b7h2jklp5rfgx"]
+[gd_scene load_steps=4 format=3 uid="uid://egp2n0jd8gy4"]
 
-[ext_resource type="Script" path="res://systems/SimulationManager.gd" id="1_sim"]
-[ext_resource type="Script" path="res://ui/ModernUI.gd" id="2_ui"]
-[ext_resource type="Script" path="res://Main.gd" id="3_main"]
+[ext_resource type="Script" uid="uid://cshgoa4b2q4fi" path="res://systems/SimulationManager.gd" id="1_sim"]
+[ext_resource type="Script" uid="uid://dornw0xj8wnuq" path="res://ui/ModernUI.gd" id="2_ui"]
+[ext_resource type="Script" uid="uid://cof06nnn3jnxf" path="res://Main.gd" id="3_main"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("3_main")
@@ -24,6 +24,8 @@ script = ExtResource("1_sim")
 script = ExtResource("2_ui")
 
 [node name="HUD" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 0
 
 [node name="ProbeListPanel" type="Panel" parent="UI"]
 

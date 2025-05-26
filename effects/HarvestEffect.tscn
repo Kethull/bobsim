@@ -1,5 +1,21 @@
-[gd_scene load_steps=0 format=3 uid="uid://j51p170t571h"]
+[gd_scene load_steps=3 format=3 uid="uid://c1h2a3r4v5e6"]
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_hvs1"]
+particle_flag_disable_z = true
+emission_shape = 1
+emission_sphere_radius = 5.0
+gravity = Vector3(0, 0, 0)
+orbit_velocity_min = 0.0
+orbit_velocity_max = 0.0
+scale_min = 2.0
+scale_max = 4.0
+color = Color(1, 1, 1, 1)
 
 [node name="HarvestEffect" type="Node2D"]
 
-[node name="Particles" type="GPUParticles2D" parent="."]
+[node name="GPUParticles2D" type="GPUParticles2D" parent="."]
+emitting = false
+amount = 8
+process_material = SubResource("ParticleProcessMaterial_hvs1")
+lifetime = 0.3
+speed_scale = 1.5

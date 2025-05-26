@@ -63,12 +63,46 @@ class_name GameConfiguration
 @export_group("Visualization")
 @export var screen_width: int = 1400
 @export var screen_height: int = 900
-@export var target_fps: int = 60
+# target_fps moved to Performance & Quality
 @export var probe_size: int = 12
-@export var enable_particle_effects: bool = true
+# enable_particle_effects moved to Performance & Quality
 @export var enable_organic_ships: bool = true
 @export var max_trail_points: int = 500
 @export var max_orbit_points: int = 1000
+
+# === Performance & Quality Configuration ===
+@export_group("Performance & Quality")
+enum QualityLevel { LOW, MEDIUM, HIGH, ULTRA } # Defines available quality presets
+@export var target_fps: int = 60 # The desired target frame rate for the application.
+@export var current_quality_level: QualityLevel = QualityLevel.HIGH # The game's current applied quality level.
+@export var enable_adaptive_quality: bool = true # Master switch to enable/disable the adaptive quality system.
+
+# Settings controllable by adaptive quality
+@export_subgroup("Adaptive Settings Values") # These are the values applied AT each quality level
+# Note: These are examples. Actual values would be fine-tuned.
+@export var particle_effects_on_low: bool = false
+@export var particle_density_low: float = 0.2
+@export var lod_scale_low: float = 0.75
+
+@export var particle_effects_on_medium: bool = true
+@export var particle_density_medium: float = 0.5
+@export var lod_scale_medium: float = 0.9
+
+@export var particle_effects_on_high: bool = true
+@export var particle_density_high: float = 1.0
+@export var lod_scale_high: float = 1.0
+
+@export var particle_effects_on_ultra: bool = true
+@export var particle_density_ultra: float = 1.2 # Example: could allow even more if capable
+@export var lod_scale_ultra: float = 1.1
+
+# These are the RUNTIME settings that get modified by AdaptiveQualityManager
+# They are not typically edited directly in the inspector if adaptive quality is on.
+@export_subgroup("Runtime Applied Quality Settings")
+@export var runtime_enable_particle_effects: bool = true
+@export var runtime_particle_density_factor: float = 1.0 # Range 0.0 (none) to 1.0 (full)
+@export var runtime_lod_distance_scale: float = 1.0 # Multiplier for LOD distances. <1 = lower detail sooner, >1 = higher detail further
+# @export var runtime_max_active_sounds: int = 32 # Example
 
 # === Debug Configuration ===
 @export_group("Debug Settings")

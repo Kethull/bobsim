@@ -1,6 +1,7 @@
 extends RigidBody2D
 class_name Probe
 
+const CollectibleResource = preload("res://resources/Resource.gd")
 
 @export_group("Probe Properties")
 @export var probe_id: int = 0
@@ -45,9 +46,6 @@ var last_action_timestamp: int = -1
 var target_resource_idx: int = -1
 var time_since_last_target_switch: int = 0
 var last_thrust_application_step: int = -1
-
-# External forces (from celestial bodies)
-var external_forces: Dictionary = {}
 
 # Trail points
 var trail_points: Array[Vector2] = []
@@ -157,11 +155,24 @@ func configure_thruster_particles(thruster: GPUParticles2D, direction: Vector2):
     thruster.emitting = false
 
 func _integrate_forces(state: PhysicsDirectBodyState2D):
-    # Apply external forces (gravity from celestial bodies)
-    var total_external_force = Vector2.ZERO
-    for force_name in external_forces:
-        total_external_force += external_forces[force_name]
-    state.apply_central_force(total_external_force)
+    # Calculate and apply gravitational forces from celestial bodies
+    var total_gravity_force = Vector2.ZERO
+    for body in get_tree().get_nodes_in_group("celestial_bodies"):
+        var celestial_body = body as CelestialBody
+        if not celestial_body or not is_instance_valid(celestial_body): # Check if instance is valid
+            continue
+
+        var distance_vector = celestial_body.global_position - global_position
+        var distance_sq = distance_vector.length_squared()
+
+        if distance_sq < 1e-6:  # Avoid division by zero or extreme forces at close range
+            continue
+
+        var force_magnitude = ConfigManager.config.gravitational_constant * mass * celestial_body.mass_kg / distance_sq
+        var force_direction = distance_vector.normalized()
+        total_gravity_force += force_direction * force_magnitude
+            
+    state.apply_central_force(total_gravity_force)
     
     # Apply thrust forces
     if is_thrusting and current_thrust_level > 0:
@@ -289,12 +300,6 @@ func update_thruster_effects():
         main_thruster.emitting = false
         audio_component.stop()
 
-func apply_external_force(force: Vector2, force_name: String):
-    external_forces[force_name] = force
-
-func remove_external_force(force_name: String):
-    external_forces.erase(force_name)
-
 func consume_energy(amount: float):
     current_energy = max(0.0, current_energy - amount)
 
@@ -318,7 +323,7 @@ func attempt_replication():
         current_energy -= ConfigManager.config.replication_cost
         replication_requested.emit(self)
 
-func start_mining(target_resource):
+func start_mining(target_resource: CollectibleResource):
     if not is_alive:
         return
     
@@ -383,8 +388,8 @@ func get_nearby_resources() -> Array:
     var bodies = sensor_array.get_overlapping_bodies()
     
     for body in bodies:
-        if body is Resource:
-            var resource = body as Resource
+        if body is CollectibleResource:
+            var resource = body as CollectibleResource
             var distance = global_position.distance_to(resource.global_position)
             resources.append({
                 "position": resource.global_position,
@@ -495,16 +500,27 @@ func calculate_collision_risk() -> float:
 
 func calculate_gravity_gradient() -> float:
     # Measure change in gravitational field
-    var current_gravity = Vector2.ZERO
-    for force_name in external_forces:
-        if force_name.begins_with("gravity_"):
-            current_gravity += external_forces[force_name]
-    
-    return current_gravity.length()
+    var total_gravity_force = Vector2.ZERO
+    for body in get_tree().get_nodes_in_group("celestial_bodies"):
+        var celestial_body = body as CelestialBody
+        if not celestial_body or not is_instance_valid(celestial_body):
+            continue
+
+        var distance_vector = celestial_body.global_position - global_position
+        var distance_sq = distance_vector.length_squared()
+
+        if distance_sq < 1e-6:
+            continue
+            
+        var force_magnitude = ConfigManager.config.gravitational_constant * mass * celestial_body.mass_kg / distance_sq
+        var force_direction = distance_vector.normalized()
+        total_gravity_force += force_direction * force_magnitude
+            
+    return total_gravity_force.length()
 
 func _on_sensor_body_entered(body):
-    if body is Resource:
-        var resource = body as Resource
+    if body is CollectibleResource:
+        var resource = body as CollectibleResource
         resource_discovered.emit(self, resource.global_position, resource.current_amount)
 
 func _on_sensor_body_exited(body):

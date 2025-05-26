@@ -2,6 +2,7 @@
 extends Node
 class_name SimulationManager
 
+const CollectibleResource = preload("res://resources/Resource.gd")
 @export var max_simulation_steps: int = 50000
 @export var simulation_speed: float = 1.0
 @export var auto_pause_on_events: bool = true
@@ -481,10 +482,10 @@ func _on_resource_discovered_by_probe(probe: Probe, resource_position: Vector2, 
 func _on_communication_sent(from_probe: Probe, to_position: Vector2, message_type: String):
     print("Probe ", from_probe.probe_id, " sent ", message_type, " to ", to_position)
 
-func _on_resource_depleted(resource: Resource):
+func _on_resource_depleted(resource: CollectibleResource):
     print("Resource depleted at ", resource.global_position)
 
-func _on_resource_harvested(resource: Resource, harvesting_probe: Probe, amount: float):
+func _on_resource_harvested(resource: CollectibleResource, harvesting_probe: Probe, amount: float):
     total_resources_mined += amount
     print("Probe ", harvesting_probe.probe_id, " harvested ", amount, " from resource")
 

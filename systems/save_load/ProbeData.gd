@@ -1,20 +1,10 @@
-class_name ProbeData
 extends Resource
+class_name ProbeData
 
-@export var id: int = 0
-@export var generation: int = 0
-@export var position: Vector2 = Vector2.ZERO
-@export var velocity: Vector2 = Vector2.ZERO
-@export var rotation: float = 0.0
-@export var angular_velocity: float = 0.0
-@export var energy: float = 0.0
-@export var max_energy: float = 100000.0
-@export var is_alive: bool = true
-@export var current_task: String = "idle"
-@export var current_target_id: int = -1
-@export var trail_points: Array[Vector2] = []
-
-# AI state
-@export var ai_enabled: bool = true
-@export var last_action: Array[int] = [0, 0, 0, 0, 0]
-@export var action_history: Array[Array] = []
+@export var id: String = ""
+@export var probe_position: Vector2 = Vector2.ZERO
+@export var probe_velocity: Vector2 = Vector2.ZERO
+@export var energy_level: float = 100.0
+@export var resources_carried: Array[ResourceData] = []
+@export var ai_state: String = "idle" # Or could be an enum
+@export var target_celestial_body_id: String = ""

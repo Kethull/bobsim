@@ -1,5 +1,21 @@
-[gd_scene load_steps=0 format=3 uid="uid://c4g7x0j6f1q2r"]
+[gd_scene load_steps=3 format=3 uid="uid://d1s2c3o4v5e6"]
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_dsc1"]
+particle_flag_disable_z = true
+emission_shape = 1
+emission_sphere_radius = 8.0
+gravity = Vector3(0, 0, 0)
+orbit_velocity_min = 0.0
+orbit_velocity_max = 0.0
+scale_min = 3.0
+scale_max = 5.0
+color = Color(0.8, 0.8, 1, 1)
 
 [node name="DiscoveryEffect" type="Node2D"]
 
-[node name="Particles" type="GPUParticles2D" parent="."]
+[node name="GPUParticles2D" type="GPUParticles2D" parent="."]
+emitting = false
+amount = 12
+process_material = SubResource("ParticleProcessMaterial_dsc1")
+lifetime = 0.4
+speed_scale = 1.2
