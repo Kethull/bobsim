@@ -30,7 +30,7 @@ class Physics:
     const DEFAULT_PROBE_MASS_KG = 8.0
 
 # Probe Configuration
-class Probe:
+class ProbeConfig: # Renamed from Probe to avoid conflict with global Probe class
     const MAX_PROBES = 20
     const INITIAL_PROBES = 1
     const MAX_ENERGY = 100000.0
@@ -88,6 +88,11 @@ class Visualization:
     const MAX_ORBIT_PATH_POINTS = 1000 # For celestial bodies
     const MAX_PROBE_TRAIL_POINTS = 500 # For probes
     const MAX_PARTICLES_PER_SYSTEM = 500 # For ParticleSystem manager
+
+    const INITIAL_ZOOM = 0.05 # Initial camera zoom level
+    const MIN_ZOOM = 0.001 # Minimum camera zoom
+    const MAX_ZOOM = 2.0 # Maximum camera zoom
+    const CAMERA_FOLLOW_SPEED = 2.0 # Speed at which camera follows selected probe
 
 # Resource Configuration
 class SimResource:
