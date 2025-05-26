@@ -1,0 +1,102 @@
+[gd_scene load_steps=3 format=3 uid="uid://b5w5gq8yq8q8x"]
+
+[ext_resource type="Script" path="res://probes/Probe.gd" id="1_abcde"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_12345"]
+radius = 10.0
+
+[node name="Probe" type="RigidBody2D"]
+script = ExtResource("1_abcde")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_12345")
+
+[node name="VisualComponent" type="Node2D" parent="."]
+
+[node name="HullSprite" type="Sprite2D" parent="VisualComponent"]
+# Placeholder texture, will be set by user or another task
+# texture = ExtResource("res://assets/textures/probe_hull_organic.png") 
+
+[node name="SolarPanels" type="Node2D" parent="VisualComponent"]
+
+[node name="LeftPanel" type="Sprite2D" parent="VisualComponent/SolarPanels"]
+# texture = ExtResource("res://assets/textures/solar_panel_left.png")
+
+[node name="RightPanel" type="Sprite2D" parent="VisualComponent/SolarPanels"]
+# texture = ExtResource("res://assets/textures/solar_panel_right.png")
+
+[node name="CommunicationDish" type="Sprite2D" parent="VisualComponent"]
+# texture = ExtResource("res://assets/textures/comm_dish.png")
+
+[node name="SensorArray" type="Sprite2D" parent="VisualComponent"]
+# texture = ExtResource("res://assets/textures/sensor_array_visual.png")
+
+[node name="StatusLights" type="Node2D" parent="VisualComponent"]
+
+[node name="StatusLight1" type="Sprite2D" parent="VisualComponent/StatusLights"]
+# texture = ExtResource("res://assets/textures/status_light.png")
+position = Vector2(-5, 10)
+
+[node name="StatusLight2" type="Sprite2D" parent="VisualComponent/StatusLights"]
+# texture = ExtResource("res://assets/textures/status_light.png")
+position = Vector2(0, 10)
+
+[node name="StatusLight3" type="Sprite2D" parent="VisualComponent/StatusLights"]
+# texture = ExtResource("res://assets/textures/status_light.png")
+position = Vector2(5, 10)
+
+[node name="ThrusterSystem" type="Node2D" parent="."]
+
+[node name="MainThruster" type="GPUParticles2D" parent="ThrusterSystem"]
+# process_material will be set by Probe.gd
+# texture = ExtResource("res://assets/textures/particle_dot.png") 
+
+[node name="RCSThrusterN" type="GPUParticles2D" parent="ThrusterSystem"]
+position = Vector2(0, -12) # Example position
+
+[node name="RCSThrusterS" type="GPUParticles2D" parent="ThrusterSystem"]
+position = Vector2(0, 12) # Example position
+
+[node name="RCSThrusterE" type="GPUParticles2D" parent="ThrusterSystem"]
+position = Vector2(10, 0) # Example position
+rotation = -1.5708 # -90 degrees
+
+[node name="RCSThrusterW" type="GPUParticles2D" parent="ThrusterSystem"]
+position = Vector2(-10, 0) # Example position
+rotation = 1.5708 # 90 degrees
+
+[node name="MiningParticles" type="GPUParticles2D" parent="ThrusterSystem"]
+# Used for mining effect
+
+[node name="SensorArray" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 0 # Will be configured by script if needed for specific interactions
+
+[node name="SensorShape" type="CollisionShape2D" parent="SensorArray"]
+shape = SubResource("CircleShape2D_12345") # Radius will be set by Probe.gd
+
+[node name="CommunicationRange" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 0 # Will be configured by script
+
+[node name="CommShape" type="CollisionShape2D" parent="CommunicationRange"]
+shape = SubResource("CircleShape2D_12345") # Radius will be set by Probe.gd
+
+[node name="MovementTrail" type="Line2D" parent="."]
+width = 2.0
+default_color = Color(0, 1, 1, 0.5) # Cyan, semi-transparent
+
+[node name="MiningLaser" type="Line2D" parent="."]
+width = 3.0
+default_color = Color(0, 1, 0, 1) # Green
+visible = false
+
+[node name="AIAgent" type="Node" parent="."]
+# Script for AIAgent will be added in a later task
+
+[node name="EnergySystem" type="Node" parent="."]
+# Script for EnergySystem will be added in a later task
+
+[node name="AudioComponent" type="AudioStreamPlayer2D" parent="."]
+# stream = ExtResource("res://assets/audio/thruster_loop.ogg")
+# volume_db = -10

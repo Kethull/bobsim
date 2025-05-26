@@ -1,0 +1,37 @@
+[gd_scene load_steps=3 format=3 uid="uid://b5w5gqf8xqvf2"]
+
+[ext_resource type="Script" path="res://resources/Resource.gd" id="1_abcde"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_12345"]
+radius = 60.0 # Default radius, can be adjusted in editor or by script
+
+[node name="Resource" type="Area2D"]
+script = ExtResource("1_abcde")
+
+[node name="CollectionShape" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_12345")
+
+[node name="ResourceSprite" type="Sprite2D" parent="."]
+# Placeholder texture, will be set by script or in editor
+# texture = ExtResource("res://assets/sprites/resource_mineral.png") 
+
+[node name="GlowEffect" type="Sprite2D" parent="."]
+# Placeholder texture, will be set by script or in editor
+# texture = ExtResource("res://assets/sprites/glow_effect.png")
+
+[node name="AmountLabel" type="Label" parent="."]
+offset_left = -50.0
+offset_top = -70.0
+offset_right = 50.0
+offset_bottom = -47.0
+text = "20000"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ParticleEffect" type="GPUParticles2D" parent="."]
+amount = 20
+process_material = null # Will be set by script
+# texture = ExtResource("res://assets/particles/particle_dot.png") # Placeholder
+
+[node name="AudioComponent" type="AudioStreamPlayer2D" parent="."]
+# stream = ExtResource("res://assets/audio/harvest_sound.ogg") # Placeholder

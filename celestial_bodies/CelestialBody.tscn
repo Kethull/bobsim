@@ -1,0 +1,42 @@
+[gd_scene load_steps=4 format=3 uid="uid://b5w5gqj3vqvqg"]
+
+[ext_resource type="Script" path="res://celestial_bodies/CelestialBody.gd" id="1_abcde"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_1"]
+radius = 50.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_2"]
+radius = 250.0 # Larger radius for gravity effects, assuming 5x display_radius
+
+[node name="CelestialBody" type="RigidBody2D"]
+script = ExtResource("1_abcde")
+display_radius = 50.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_1")
+
+[node name="VisualComponent" type="Node2D" parent="."]
+
+[node name="BodySprite" type="Sprite2D" parent="VisualComponent"]
+# Texture will be assigned later
+
+[node name="AtmosphereGlow" type="Sprite2D" parent="VisualComponent"]
+# Texture and shader will be assigned later
+
+[node name="StatusLights" type="Node2D" parent="VisualComponent"]
+# Visual indicators for active systems
+
+[node name="OrbitTrail" type="Line2D" parent="."]
+width = 2.0
+default_color = Color(0.5, 0.5, 0.5, 0.5) 
+# Points will be added by script
+
+[node name="GravityField" type="Area2D" parent="."]
+collision_layer = 0 # Gravity field should not physically collide
+collision_mask = 2  # Detect probes (assuming probes are on layer 2)
+
+[node name="GravityShape" type="CollisionShape2D" parent="GravityField"]
+shape = SubResource("CircleShape2D_2")
+
+[node name="AudioComponent" type="AudioStreamPlayer2D" parent="."]
+# AudioStream will be assigned later
