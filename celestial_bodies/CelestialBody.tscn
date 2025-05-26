@@ -1,26 +1,28 @@
-[gd_scene load_steps=3 format=3 uid="uid://cstlbdy000001"]
+[gd_scene load_steps=4 format=3 uid="uid://d1k2j3h4g5f6e"]
 
-[ext_resource type="Script" path="res://celestial_bodies/CelestialBody.gd" id="1_script"]
+[ext_resource type="Script" path="res://celestial_bodies/CelestialBody.gd" id="1_cbodygd"]
+[ext_resource type="Texture2D" path="res://icon.svg" id="2_iconsvg"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_body"]
-radius = 32.0 ; Placeholder: Value will be set by CelestialBody.gd _ready() from display_radius
+[sub_resource type="CircleShape2D" id="CircleShape2D_cs50"]
+radius = 50.0
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_grav"]
-radius = 200.0 ; Placeholder: Value for gravity influence, can be adjusted in script or editor
+[sub_resource type="CircleShape2D" id="CircleShape2D_cs200"]
+radius = 200.0
 
 [node name="CelestialBody" type="RigidBody2D"]
-script = ExtResource("1_script")
+script = ExtResource("1_cbodygd")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource("CircleShape2D_body")
+shape = SubResource("CircleShape2D_cs50")
 
 [node name="VisualComponent" type="Node2D" parent="."]
 
 [node name="BodySprite" type="Sprite2D" parent="VisualComponent"]
-; Note: Assign texture in editor or via script if needed.
+texture = ExtResource("2_iconsvg")
 
 [node name="AtmosphereGlow" type="Sprite2D" parent="VisualComponent"]
-; Note: Assign texture in editor or via script if needed.
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("2_iconsvg")
 
 [node name="StatusLights" type="Node2D" parent="VisualComponent"]
 
@@ -29,10 +31,8 @@ width = 2.0
 default_color = Color(0.501961, 0.501961, 0.501961, 0.5)
 
 [node name="GravityField" type="Area2D" parent="."]
-collision_layer = 0
-collision_mask = 0 ; Placeholder: Configure mask to detect relevant physics layers (e.g., probes).
 
 [node name="GravityShape" type="CollisionShape2D" parent="GravityField"]
-shape = SubResource("CircleShape2D_grav")
+shape = SubResource("CircleShape2D_cs200")
 
 [node name="AudioComponent" type="AudioStreamPlayer2D" parent="."]

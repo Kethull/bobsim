@@ -214,7 +214,7 @@ func discover(discovering_probe: Probe):
 
 func _on_body_entered(body):
     if body is Probe:
-        var probe = body as Probe
+        var probe: Probe = body as Probe
         if probe.is_alive:
             # Check if within harvest distance
             var distance = global_position.distance_to(probe.global_position)
@@ -229,7 +229,7 @@ func _on_body_entered(body):
 
 func _on_body_exited(body):
     if body is Probe:
-        var probe = body as Probe
+        var probe: Probe = body as Probe
         if probe in being_harvested_by:
             being_harvested_by.erase(probe)
             probe.stop_mining()

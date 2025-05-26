@@ -2,7 +2,7 @@
 extends RigidBody2D
 class_name CelestialBody
 
-@onready var config_manager = get_node("/root/ConfigManager")
+# ConfigManager is an AutoLoad, no need for direct node reference.
 
 @export_group("Physical Properties")
 @export var body_name: String = ""
@@ -78,8 +78,8 @@ func calculate_initial_state():
 
 func calculate_state_from_orbital_elements() -> Dictionary:
     # Convert AU to simulation units
-    var a_sim = semi_major_axis_au * config_manager.config.au_scale
-    var mu = config_manager.config.gravitational_constant * central_body.mass_kg
+    var a_sim = semi_major_axis_au * ConfigManager.config.au_scale
+    var mu = ConfigManager.config.gravitational_constant * central_body.mass_kg
     
     # Solve Kepler's equation
     var M_rad = deg_to_rad(mean_anomaly_epoch_deg)
@@ -155,7 +155,7 @@ func _integrate_forces(state: PhysicsDirectBodyState2D):
         if distance_sq < 1e-6:  # Avoid division by zero
             continue
             
-        var force_magnitude = config_manager.config.gravitational_constant * mass_kg * celestial_body.mass_kg / distance_sq
+        var force_magnitude = ConfigManager.config.gravitational_constant * mass_kg * celestial_body.mass_kg / distance_sq
         var force_direction = distance_vector.normalized()
         total_force += force_direction * force_magnitude
     
@@ -176,7 +176,7 @@ func update_orbit_trail():
     orbit_points.append(global_position)
     
     # Limit trail length
-    while orbit_points.size() > config_manager.config.max_orbit_points:
+    while orbit_points.size() > ConfigManager.config.max_orbit_points:
         orbit_points.pop_front()
     
     # Update Line2D points
@@ -189,12 +189,12 @@ func check_gravity_field_interactions():
     var bodies = gravity_field.get_overlapping_bodies()
     for body in bodies:
         if body is Probe:
-            var probe = body as Probe
+            var probe: Probe = body as Probe
             var distance_vector = global_position - probe.global_position
             var distance = distance_vector.length()
             
             if distance > 0:
-                var force_magnitude = config_manager.config.gravitational_constant * mass_kg * probe.mass / (distance * distance)
+                var force_magnitude = ConfigManager.config.gravitational_constant * mass_kg * probe.mass / (distance * distance)
                 var force = distance_vector.normalized() * force_magnitude
                 probe.apply_external_force(force, "gravity_" + body_name)
 

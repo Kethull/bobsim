@@ -1,0 +1,5 @@
+[gd_scene load_steps=0 format=3 uid="uid://c4g7x0j6f1q2r"]
+
+[node name="DiscoveryEffect" type="Node2D"]
+
+[node name="Particles" type="GPUParticles2D" parent="."]

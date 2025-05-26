@@ -1,12 +1,10 @@
 extends RigidBody2D
 class_name Probe
 
-const ConfigManager = preload("res://scripts/ConfigManager.gd")
 
 @export_group("Probe Properties")
 @export var probe_id: int = 0
 @export var generation: int = 0
-# @export var mass: float = 8.0 # Mass is an inherent property of RigidBody2D
 
 @export_group("Energy System")
 @export var max_energy: float = 100000.0
@@ -67,6 +65,7 @@ func _ready():
     set_collision_layer_value(2, true)  # Probes layer
     set_collision_mask_value(1, true)   # Interact with celestial bodies
     set_collision_mask_value(3, true)   # Interact with resources
+    mass = ConfigManager.config.probe_mass
     
     # Add to groups
     add_to_group("probes")

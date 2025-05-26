@@ -22,31 +22,50 @@ func _ready() -> void:
 
 # --- Initialization ---
 func create_audio_pools() -> void:
-	var sound_definitions = [
-		{"name": "thruster", "path": "res://audio/thruster_loop.ogg", "pool_size": 5},
-		{"name": "mining_laser", "path": "res://audio/mining_laser_loop.ogg", "pool_size": 3},
-		{"name": "communication", "path": "res://audio/communication_chatter.ogg", "pool_size": 2},
-		{"name": "energy_critical", "path": "res://audio/energy_critical_warning.ogg", "pool_size": 1},
-		{"name": "discovery", "path": "res://audio/discovery_notification.ogg", "pool_size": 1},
-		{"name": "replication", "path": "res://audio/replication_complete.ogg", "pool_size": 1},
-		{"name": "explosion", "path": "res://audio/explosion.ogg", "pool_size": 10}
-	]
+	var sound_configs = {
+		"thruster": {"file": "res://audio/placeholder.ogg", "count": 5},
+		"mining_laser": {"file": "res://audio/placeholder.ogg", "count": 3},
+		"communication": {"file": "res://audio/placeholder.ogg", "count": 2},
+		"energy_critical": {"file": "res://audio/placeholder.ogg", "count": 1},
+		"discovery": {"file": "res://audio/placeholder.ogg", "count": 1},
+		"replication": {"file": "res://audio/placeholder.ogg", "count": 1},
+		"explosion": {"file": "res://audio/placeholder.ogg", "count": 5}
+	}
 
-	for sound_def in sound_definitions:
-		var pool_name: String = sound_def.name
-		var sound_path: String = sound_def.path
-		var pool_size: int = sound_def.pool_size
+	for sound_type in sound_configs.keys():
+		var config = sound_configs[sound_type]
+		var pool_name: String = sound_type
 
 		audio_pools[pool_name] = []
-		var stream: AudioStream = load(sound_path)
-		if not stream:
-			printerr("AudioManager: Failed to load audio stream at path: ", sound_path, " for pool: ", pool_name)
+
+		# Check if audio file exists, skip if not
+		if not FileAccess.file_exists(config.file):
+			print("Warning: Audio file not found: ", config.file)
+			continue
+		
+		var loaded_item = load(config.file)
+		var audio_stream: AudioStream = null
+
+		if loaded_item is AudioStream:
+			audio_stream = loaded_item
+		else:
+			var type_info_str : String = "unknown or null"
+			if loaded_item != null:
+				type_info_str = loaded_item.get_class()
+				var script_res = loaded_item.get_script()
+				if script_res is Script and script_res.resource_path: # Check if script_res is valid Script object
+					type_info_str += " (script: " + script_res.resource_path + ")"
+			printerr("AudioManager: File '", config.file, "' for pool '", pool_name, "' loaded as '", type_info_str, "' instead of AudioStream. Skipping.")
 			continue
 
-		for i in range(pool_size):
+		if not audio_stream: # Additional safeguard, though the above logic should cover it.
+			printerr("AudioManager: AudioStream is null after type check for path: ", config.file, " for pool: ", pool_name, ". Skipping.")
+			continue
+
+		for i in range(config.count):
 			var player := AudioStreamPlayer2D.new()
 			player.name = "%s_Player_%d" % [pool_name, i + 1]
-			player.stream = stream # Streams are shared; loop status managed by play functions
+			player.stream = audio_stream
 			add_child(player)
 			audio_pools[pool_name].append(player)
 			player.finished.connect(_on_audio_player_finished.bind(player))

@@ -1,0 +1,5 @@
+[gd_scene load_steps=0 format=3 uid="uid://j51p170t571h"]
+
+[node name="HarvestEffect" type="Node2D"]
+
+[node name="Particles" type="GPUParticles2D" parent="."]

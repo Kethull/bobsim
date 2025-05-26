@@ -1,25 +1,29 @@
-[gd_scene load_steps=5 format=3 uid="uid://d1q2w3e4r5t6"]
+[gd_scene load_steps=6 format=3 uid="uid://d1k0gq8x0yqjv"]
 
-[ext_resource type="Script" path="res://probes/Probe.gd" id="1_probe_gd"]
+[ext_resource type="Script" path="res://probes/Probe.gd" id="1_prbgd"]
+[ext_resource type="Texture2D" path="res://icon.svg" id="2_iconsvg"]
+[ext_resource type="Script" path="res://ai/AIAgent.gd" id="3_aigdt"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_probe_collision"]
+[sub_resource type="CircleShape2D" id="CircleShape2D_r12"]
 radius = 12.0
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_sensor_shape"]
+[sub_resource type="CircleShape2D" id="CircleShape2D_r100"]
 radius = 100.0
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_comm_shape"]
+[sub_resource type="CircleShape2D" id="CircleShape2D_r200"]
 radius = 200.0
 
 [node name="Probe" type="RigidBody2D"]
-script = ExtResource("1_probe_gd")
+script = ExtResource("1_prbgd")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource("CircleShape2D_probe_collision")
+shape = SubResource("CircleShape2D_r12")
 
 [node name="VisualComponent" type="Node2D" parent="."]
 
 [node name="HullSprite" type="Sprite2D" parent="VisualComponent"]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_iconsvg")
 
 [node name="SolarPanels" type="Node2D" parent="VisualComponent"]
 
@@ -30,7 +34,6 @@ shape = SubResource("CircleShape2D_probe_collision")
 [node name="CommunicationDish" type="Sprite2D" parent="VisualComponent"]
 
 [node name="SensorArray" type="Sprite2D" parent="VisualComponent"]
-metadata/_edit_lock_ = true
 
 [node name="StatusLights" type="Node2D" parent="VisualComponent"]
 
@@ -55,21 +58,21 @@ metadata/_edit_lock_ = true
 [node name="MiningParticles" type="GPUParticles2D" parent="ThrusterSystem"]
 
 [node name="SensorArray" type="Area2D" parent="."]
-metadata/_edit_lock_ = true
 
 [node name="SensorShape" type="CollisionShape2D" parent="SensorArray"]
-shape = SubResource("CircleShape2D_sensor_shape")
+shape = SubResource("CircleShape2D_r100")
 
 [node name="CommunicationRange" type="Area2D" parent="."]
 
 [node name="CommShape" type="CollisionShape2D" parent="CommunicationRange"]
-shape = SubResource("CircleShape2D_comm_shape")
+shape = SubResource("CircleShape2D_r200")
 
 [node name="MovementTrail" type="Line2D" parent="."]
 
 [node name="MiningLaser" type="Line2D" parent="."]
 
 [node name="AIAgent" type="Node" parent="."]
+script = ExtResource("3_aigdt")
 
 [node name="EnergySystem" type="Node" parent="."]
 

@@ -1,22 +1,42 @@
-[gd_scene load_steps=2 format=3 uid="uid://c4g7x0j6q1k2l"]
+[gd_scene load_steps=4 format=3 uid="uid://bqv7xgs5a23h1"]
 
-[ext_resource type="Script" uid="uid://b2w0p1q8r7s3t" path="res://resources/Resource.gd" id="1_a1b2c"]
+[ext_resource type="Script" path="res://resources/Resource.gd" id="1_c5xjw"]
+[ext_resource type="Texture2D" path="res://icon.svg" id="2_n6h7k"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_d3e4f"]
+[sub_resource type="CircleShape2D" id="CircleShape2D_sui7x"]
 radius = 50.0
 
 [node name="Resource" type="Area2D"]
-script = ExtResource("1_a1b2c")
+script = ExtResource("1_c5xjw")
 
 [node name="CollectionShape" type="CollisionShape2D" parent="."]
-shape = SubResource("CircleShape2D_d3e4f")
+shape = SubResource("CircleShape2D_sui7x")
 
 [node name="ResourceSprite" type="Sprite2D" parent="."]
+modulate = Color(0, 1, 0, 1)
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("2_n6h7k")
 
 [node name="GlowEffect" type="Sprite2D" parent="."]
+modulate = Color(1, 1, 1, 0.5)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_n6h7k")
 
 [node name="AmountLabel" type="Label" parent="."]
-text = "0"
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -50.0
+offset_top = -11.5
+offset_right = 50.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "20000"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="ParticleEffect" type="GPUParticles2D" parent="."]
 

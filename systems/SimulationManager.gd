@@ -7,7 +7,7 @@ class_name SimulationManager
 @export var auto_pause_on_events: bool = true
 @export var auto_restart_episodes: bool = true
 
-@onready var solar_system: Node2D = $"../SolarSystem"
+@onready var solar_system: Node2D = get_parent().get_node("SolarSystem")
 @onready var probe_manager: Node2D = $"../ProbeManager"
 @onready var resource_manager: Node2D = $"../ResourceManager"
 @onready var ui_system: Control = $"../UI"
