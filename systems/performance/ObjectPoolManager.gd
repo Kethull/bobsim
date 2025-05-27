@@ -1,4 +1,3 @@
-class_name ObjectPoolManager
 extends Node
 
 ## Manages pools of reusable objects to improve performance by reducing

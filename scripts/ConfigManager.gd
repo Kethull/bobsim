@@ -18,9 +18,14 @@ func _ready():
 # If the configuration file doesn't exist, a new one is created.
 func load_configuration():
 	if ResourceLoader.exists(config_path):
-		config = ResourceLoader.load(config_path)
-		if config == null: # Handle case where file exists but is not a valid resource or wrong type
-			push_error("Failed to load configuration file at %s. Creating a new one." % config_path)
+		var loaded_resource = ResourceLoader.load(config_path)
+		if loaded_resource is GameConfiguration:
+			config = loaded_resource
+		else: # Handle case where file exists but is not a valid resource or wrong type
+			if loaded_resource != null:
+				push_error("Loaded resource at %s is not a GameConfiguration. Type: %s. Creating a new one." % [config_path, typeof(loaded_resource)])
+			else:
+				push_error("Failed to load configuration file at %s (returned null). Creating a new one." % config_path)
 			config = GameConfiguration.new()
 			save_configuration()
 	else:
@@ -38,6 +43,17 @@ func save_configuration():
 	var error = ResourceSaver.save(config, config_path)
 	if error != OK:
 		push_error("Failed to save configuration file: %s. Error code: %s" % [config_path, error])
+
+
+# Returns the current game configuration.
+# Ensures that a configuration is loaded or created if it's not already.
+func get_current_game_config() -> GameConfiguration:
+	if config == null:
+		# This situation implies _ready might not have completed or an unexpected issue occurred.
+		# load_configuration() will attempt to load from file or create a new default.
+		push_warning("ConfigManager.config was null when get_current_game_config() was called. Forcing load/creation.")
+		load_configuration() # This will initialize 'config'
+	return config
 
 
 # Validates the current game configuration.

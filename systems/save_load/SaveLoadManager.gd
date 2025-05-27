@@ -1,4 +1,3 @@
-class_name SaveLoadManager
 # SaveLoadManager.gd (AutoLoad)
 extends Node
 
