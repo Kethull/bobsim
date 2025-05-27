@@ -1,3 +1,4 @@
+class_name ObjectPoolManagerNode
 extends Node
 
 ## Manages pools of reusable objects to improve performance by reducing
@@ -15,9 +16,9 @@ class ObjectPool:
 	var current_size: int
 	var available_objects: Array[Node] = []
 	var in_use_objects: Array[Node] = [] # Primarily for stats/debugging
-	var _owner_manager: ObjectPoolManager # Reference to the ObjectPoolManager instance
+	var _owner_manager: ObjectPoolManagerNode # Reference to the ObjectPoolManager instance
 
-	func _init(path: String, size: int, manager: ObjectPoolManager):
+	func _init(path: String, size: int, manager: ObjectPoolManagerNode):
 		scene_path = path
 		initial_size = size
 		current_size = size

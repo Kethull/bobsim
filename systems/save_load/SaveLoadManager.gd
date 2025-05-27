@@ -1,4 +1,5 @@
 # SaveLoadManager.gd (AutoLoad)
+class_name SaveLoadManagerNode
 extends Node
 
 var current_save_data: SimulationSaveData
