@@ -1,5 +1,5 @@
 # ModernUI.gd
-extends Control
+extends CanvasLayer
 class_name ModernUI
 
 @onready var hud: Control = $HUD

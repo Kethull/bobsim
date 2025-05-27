@@ -1,0 +1,3 @@
+[gd_scene load_steps=1 format=3 uid="uid://c8f5g7iaj0k1"]
+
+[node name="ThrusterExhaust" type="Node2D"]
