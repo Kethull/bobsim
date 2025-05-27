@@ -1,4 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://p1a2r3t4i5c6"]
+[gd_scene load_steps=2 format=3 uid="uid://p1a2r3t4i5c6"]
+
+[ext_resource type="Script" path="res://effects/ParticleEffect.gd" id="1_pescript"]
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_gen1"]
 particle_flag_disable_z = true
@@ -11,7 +13,7 @@ scale_min = 1.0
 scale_max = 1.0
 color = Color(1, 1, 1, 1)
 
-[node name="ParticleEffect" type="Node2D"]
+[node name="ParticleEffect" type="Node2D" script = ExtResource("1_pescript")]
 
 [node name="GPUParticles2D" type="GPUParticles2D" parent="."]
 emitting = false
