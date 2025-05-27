@@ -22,13 +22,13 @@ func _ready() -> void:
 # --- Initialization ---
 func create_audio_pools() -> void:
 	var sound_configs = {
-		"thruster": {"file": "res://audio/placeholder.ogg", "count": 5},
-		"mining_laser": {"file": "res://audio/placeholder.ogg", "count": 3},
-		"communication": {"file": "res://audio/placeholder.ogg", "count": 2},
-		"energy_critical": {"file": "res://audio/placeholder.ogg", "count": 1},
-		"discovery": {"file": "res://audio/placeholder.ogg", "count": 1},
-		"replication": {"file": "res://audio/placeholder.ogg", "count": 1},
-		"explosion": {"file": "res://audio/placeholder.ogg", "count": 5}
+		"thruster": {"file": "res://audio/thruster_loop.ogg", "count": 5},
+		"mining_laser": {"file": "res://audio/mining_laser.ogg", "count": 3},
+		"communication": {"file": "res://audio/communication_beep.ogg", "count": 2},
+		"energy_critical": {"file": "res://audio/energy_warning.ogg", "count": 1},
+		"discovery": {"file": "res://audio/discovery_chime.ogg", "count": 1},
+		"replication": {"file": "res://audio/replication_success.ogg", "count": 1},
+		"explosion": {"file": "res://audio/explosion.ogg", "count": 5}
 	}
 
 	for sound_type in sound_configs.keys():

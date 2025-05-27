@@ -1,9 +1,6 @@
 extends RigidBody2D
 class_name Probe
 
-const CollectibleResource = preload("res://resources/Resource.gd")
-
-@export_group("Probe Properties")
 @export var probe_id: int = 0
 @export var generation: int = 0
 
@@ -323,7 +320,7 @@ func attempt_replication():
 		current_energy -= ConfigManager.config.replication_cost
 		replication_requested.emit(self)
 
-func start_mining(target_resource: CollectibleResource):
+func start_mining(target_resource: GameResource):
 	if not is_alive:
 		return
 	
@@ -388,8 +385,8 @@ func get_nearby_resources() -> Array:
 	var bodies = sensor_array.get_overlapping_bodies()
 	
 	for body in bodies:
-		if body is CollectibleResource:
-			var resource = body as CollectibleResource
+		if body is GameResource:
+			var resource = body as GameResource
 			var distance = global_position.distance_to(resource.global_position)
 			resources.append({
 				"position": resource.global_position,
@@ -519,8 +516,8 @@ func calculate_gravity_gradient() -> float:
 	return total_gravity_force.length()
 
 func _on_sensor_body_entered(body):
-	if body is CollectibleResource:
-		var resource = body as CollectibleResource
+	if body is GameResource:
+		var resource = body as GameResource
 		resource_discovered.emit(self, resource.global_position, resource.current_amount)
 
 func _on_sensor_body_exited(body):

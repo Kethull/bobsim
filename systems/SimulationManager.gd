@@ -2,7 +2,7 @@
 extends Node
 class_name SimulationManager
 
-const CollectibleResource = preload("res://resources/Resource.gd")
+const GameResource = preload("res://resources/Resource.gd")
 @export var max_simulation_steps: int = 50000
 @export var simulation_speed: float = 1.0
 @export var auto_pause_on_events: bool = true
@@ -35,7 +35,39 @@ signal simulation_ended()
 signal episode_completed(episode_num: int, total_steps: int)
 signal probe_count_changed(new_count: int)
 
+var _dependencies_initialized := false
+
 func _ready():
+	# Defer initialization until ConfigManager is ready.
+	if ConfigManager.is_fully_ready:
+		_initialize_after_config_ready()
+	else:
+		# Check if ConfigManager node exists and has the signal before connecting
+		if ConfigManager and ConfigManager.has_signal("configuration_loaded_and_validated"):
+			var error_code = ConfigManager.configuration_loaded_and_validated.connect(_initialize_after_config_ready)
+			if error_code != OK:
+				push_error("SimulationManager: Failed to connect to ConfigManager.configuration_loaded_and_validated. Error: %s" % error_code)
+				# Fallback or error state if connection fails
+				_handle_config_manager_not_ready()
+		else:
+			push_error("SimulationManager: ConfigManager is not available or does not have 'configuration_loaded_and_validated' signal at _ready().")
+			_handle_config_manager_not_ready()
+
+func _handle_config_manager_not_ready():
+	# This function can be expanded to handle cases where ConfigManager might never become ready
+	# For now, it just logs an error. Potentially, it could try to re-check or enter a safe mode.
+	push_error("SimulationManager: Critical error - ConfigManager did not become ready or signal connection failed. Simulation cannot start.")
+	# Consider disabling the simulation or parts of it.
+	# For example, you might want to prevent `_physics_process` from running:
+	set_physics_process(false)
+
+func _initialize_after_config_ready():
+	if _dependencies_initialized:
+		return # Already initialized
+	_dependencies_initialized = true
+	
+	print_debug("SimulationManager: ConfigManager ready, proceeding with initialization.")
+	
 	# Initialize simulation
 	initialize_simulation()
 	
@@ -47,7 +79,15 @@ func _ready():
 
 func initialize_simulation():
 	# Validate configuration
-	if not ConfigManager.validate_configuration():
+	# ConfigManager.validate_configuration() is called within ConfigManager._ready() now.
+	# We rely on the signal meaning it's loaded and valid, or an error was pushed by ConfigManager.
+	if not ConfigManager or not ConfigManager.config:
+		push_error("SimulationManager: ConfigManager or its config is null during initialize_simulation. Aborting initialization.")
+		return
+	
+	# Further check if config is valid, though ConfigManager should have handled this.
+	# This is a defensive check.
+	if not ConfigManager.validate_configuration(): # This will re-validate, which is fine.
 		push_error("Invalid configuration detected")
 		return
 	
@@ -369,12 +409,18 @@ func create_save_data() -> SimulationSaveData:
 	# Save probe data
 	for probe in get_tree().get_nodes_in_group("probes"):
 		var probe_data = ProbeData.new()
-		probe_data.id = probe.probe_id
-		probe_data.position = probe.global_position
-		probe_data.velocity = probe.linear_velocity
-		probe_data.energy = probe.current_energy
-		probe_data.generation = probe.generation
-		probe_data.is_alive = probe.is_alive
+		probe_data.id = str(probe.probe_id) # Ensure ID is a string
+		probe_data.probe_position = probe.global_position
+		probe_data.probe_velocity = probe.linear_velocity
+		probe_data.energy_level = probe.current_energy
+		# probe.generation is not part of ProbeData
+		# probe.is_alive is not part of ProbeData
+		probe_data.resources_carried = [] # Assuming resources are tracked globally, not per probe inventory for save
+		probe_data.ai_state = probe.current_task
+		if probe.current_target_id != -1: # Check if there is a target
+			probe_data.target_celestial_body_id = str(probe.current_target_id)
+		else:
+			probe_data.target_celestial_body_id = "" # No target
 		save_data.probes.append(probe_data)
 	
 	# Save resource data
@@ -482,10 +528,10 @@ func _on_resource_discovered_by_probe(probe: Probe, resource_position: Vector2, 
 func _on_communication_sent(from_probe: Probe, to_position: Vector2, message_type: String):
 	print("Probe ", from_probe.probe_id, " sent ", message_type, " to ", to_position)
 
-func _on_resource_depleted(resource: CollectibleResource):
+func _on_resource_depleted(resource: GameResource):
 	print("Resource depleted at ", resource.global_position)
 
-func _on_resource_harvested(resource: CollectibleResource, harvesting_probe: Probe, amount: float):
+func _on_resource_harvested(resource: GameResource, harvesting_probe: Probe, amount: float):
 	total_resources_mined += amount
 	print("Probe ", harvesting_probe.probe_id, " harvested ", amount, " from resource")
 

@@ -1,6 +1,6 @@
 # Resource.gd
 extends Area2D
-class_name CollectibleResource
+class_name GameResource
 @export_group("Resource Properties")
 @export var resource_type: String = "mineral"
 @export var max_amount: float = 20000.0
@@ -19,9 +19,9 @@ var discovered_by: Array[int] = []  # Probe IDs that discovered this resource
 var being_harvested_by: Array[Probe] = []
 var glow_tween: Tween
 
-signal resource_depleted(resource: CollectibleResource)
-signal resource_discovered(resource: CollectibleResource, discovering_probe: Probe)
-signal resource_harvested(resource: CollectibleResource, harvesting_probe: Probe, amount: float)
+signal resource_depleted(resource: GameResource)
+signal resource_discovered(resource: GameResource, discovering_probe: Probe)
+signal resource_harvested(resource: GameResource, harvesting_probe: Probe, amount: float)
 
 func _ready():
 	# Configure collision detection

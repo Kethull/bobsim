@@ -9,9 +9,23 @@ var config: GameConfiguration
 # The path to the configuration file.
 var config_path: String = "user://game_config.tres"
 
+# Signal emitted when configuration is loaded and validated.
+signal configuration_loaded_and_validated
+
+# Flag to indicate if the ConfigManager has completed its _ready() setup.
+var is_fully_ready := false
+
 
 func _ready():
-	load_configuration()
+	load_configuration() # This internally handles loading, creation, saving, and validation.
+	
+	is_fully_ready = true
+	if config:
+		configuration_loaded_and_validated.emit()
+		print_debug("ConfigManager: Configuration loaded and signal emitted.")
+	else:
+		push_error("ConfigManager: config is null after load_configuration in _ready. Cannot emit configuration_loaded_and_validated.")
+		print_debug("ConfigManager: config is null, signal NOT emitted.")
 
 
 # Loads the game configuration from the specified path.
@@ -43,17 +57,6 @@ func save_configuration():
 	var error = ResourceSaver.save(config, config_path)
 	if error != OK:
 		push_error("Failed to save configuration file: %s. Error code: %s" % [config_path, error])
-
-
-# Returns the current game configuration.
-# Ensures that a configuration is loaded or created if it's not already.
-func get_current_game_config() -> GameConfiguration:
-	if config == null:
-		# This situation implies _ready might not have completed or an unexpected issue occurred.
-		# load_configuration() will attempt to load from file or create a new default.
-		push_warning("ConfigManager.config was null when get_current_game_config() was called. Forcing load/creation.")
-		load_configuration() # This will initialize 'config'
-	return config
 
 
 # Validates the current game configuration.
