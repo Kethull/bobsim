@@ -1,0 +1,335 @@
+[gd_scene load_steps=8 format=3 uid="uid://b4y8qg8qnwj67"]
+
+[ext_resource type="Script" path="res://tests/QLearningDemo.gd" id="1_qlearn"]
+[ext_resource type="FontFile" uid="uid://b6rx2bkvh56c5" path="res://ui/fonts/font_regular.tres" id="2_font"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+bg_color = Color(0.14902, 0.14902, 0.14902, 0.784314)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button"]
+content_margin_left = 10.0
+content_margin_top = 5.0
+content_margin_right = 10.0
+content_margin_bottom = 5.0
+bg_color = Color(0.227451, 0.227451, 0.317647, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button_hover"]
+content_margin_left = 10.0
+content_margin_top = 5.0
+content_margin_right = 10.0
+content_margin_bottom = 5.0
+bg_color = Color(0.313726, 0.313726, 0.435294, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button_press"]
+content_margin_left = 10.0
+content_margin_top = 5.0
+content_margin_right = 10.0
+content_margin_bottom = 5.0
+bg_color = Color(0.196078, 0.196078, 0.278431, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_title"]
+content_margin_left = 10.0
+content_margin_top = 5.0
+content_margin_right = 10.0
+content_margin_bottom = 5.0
+bg_color = Color(0.160784, 0.160784, 0.239216, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[node name="QLearningDemo" type="Node2D"]
+script = ExtResource("1_qlearn")
+
+[node name="StarBackground" type="Node2D" parent="."]
+
+[node name="ProbeContainer" type="Node2D" parent="."]
+
+[node name="ResourceContainer" type="Node2D" parent="."]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(0, 0)
+zoom = Vector2(0.5, 0.5)
+
+[node name="UILayer" type="CanvasLayer" parent="."]
+
+[node name="InfoPanel" type="PanelContainer" parent="UILayer"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = -320.0
+offset_right = 320.0
+offset_bottom = -20.0
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UILayer/InfoPanel"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="UILayer/InfoPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("StyleBoxFlat_title")
+text = "Q-LEARNING STATISTICS"
+horizontal_alignment = 1
+
+[node name="InfoLabel" type="Label" parent="UILayer/InfoPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 14
+text = "Q-Learning Demonstration
+
+Demo Time: 0.0 seconds
+Time Scale: 1.0x
+
+PROBE STATISTICS:
+
+[Loading...]"
+autowrap_mode = 2
+
+[node name="TimeControlPanel" type="PanelContainer" parent="UILayer"]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -200.0
+offset_top = -100.0
+offset_right = 200.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UILayer/TimeControlPanel"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="UILayer/TimeControlPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_title")
+text = "SIMULATION CONTROLS"
+horizontal_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UILayer/TimeControlPanel/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="PauseButton" type="Button" parent="UILayer/TimeControlPanel/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(80, 40)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxFlat_button")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button_press")
+text = "❚❚ Pause"
+
+[node name="PlayButton" type="Button" parent="UILayer/TimeControlPanel/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(80, 40)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxFlat_button")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button_press")
+text = "▶ Play"
+
+[node name="FastButton" type="Button" parent="UILayer/TimeControlPanel/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(80, 40)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxFlat_button")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button_press")
+text = "▶▶ Fast"
+
+[node name="ResetButton" type="Button" parent="UILayer/TimeControlPanel/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(80, 40)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxFlat_button")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button_press")
+text = "↺ Reset"
+
+[node name="ControlsHint" type="Label" parent="UILayer/TimeControlPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 12
+text = "Keyboard: [Space] Pause/Play, [R] Reset, [1-4] Select Probe"
+horizontal_alignment = 1
+
+[node name="ProbeSelector" type="PanelContainer" parent="UILayer"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -320.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = 120.0
+grow_horizontal = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UILayer/ProbeSelector"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="UILayer/ProbeSelector/VBoxContainer"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_title")
+text = "PROBE SELECT"
+horizontal_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UILayer/ProbeSelector/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="NoviceButton" type="Button" parent="UILayer/ProbeSelector/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 0.3, 0.3, 1)
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_button")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button_press")
+text = "Novice"
+
+[node name="LearningButton" type="Button" parent="UILayer/ProbeSelector/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 0.8, 0.2, 1)
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_button")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button_press")
+text = "Learning"
+
+[node name="ExpertButton" type="Button" parent="UILayer/ProbeSelector/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.3, 1, 0.3, 1)
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_button")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button_press")
+text = "Expert"
+
+[node name="MasterButton" type="Button" parent="UILayer/ProbeSelector/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.3, 0.5, 1, 1)
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_button")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button_press")
+text = "Master"
+
+[node name="ExplanationPanel" type="PanelContainer" parent="UILayer"]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -320.0
+offset_top = -320.0
+offset_right = -20.0
+offset_bottom = -120.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UILayer/ExplanationPanel"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="UILayer/ExplanationPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_title")
+text = "Q-LEARNING EXPLANATION"
+horizontal_alignment = 1
+
+[node name="ExplanationLabel" type="Label" parent="UILayer/ExplanationPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 14
+text = "This scene demonstrates probes at different stages of Q-learning:
+
+• Novice (Red): High exploration (ε=1.0), completely random behavior
+• Learning (Yellow): Balanced exploration and exploitation (ε=0.5)
+• Expert (Green): Mostly exploitation with some exploration (ε=0.1)
+• Master (Blue): Almost pure exploitation of learned behavior (ε=0.01)
+
+The colored paths show each probe's trajectory as it searches for resources."
+autowrap_mode = 2
+
+[node name="LegendPanel" type="PanelContainer" parent="UILayer"]
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 320.0
+offset_bottom = 180.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UILayer/LegendPanel"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="UILayer/LegendPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_title")
+text = "VISUALIZATION LEGEND"
+horizontal_alignment = 1
+
+[node name="LegendLabel" type="Label" parent="UILayer/LegendPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 14
+text = "• Green Circles: Basic resources (15,000 units)
+• Cyan Circles: Medium resources (25,000 units)
+• Purple Circles: Advanced resources (40,000 units)
+
+• Path Lines: Probe movement history
+• Blinking Indicators: Action type (random/best)
+• Floating +/- Numbers: Rewards earned"
+autowrap_mode = 2

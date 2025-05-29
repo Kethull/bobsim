@@ -1,5 +1,5 @@
 # AIDebugVisualizer.gd
-extends Node2D
+extends Node
 class_name AIDebugVisualizer
 
 # Configuration
@@ -26,6 +26,9 @@ var hud_visible: bool = true  # Toggle for HUD visibility
 var selected_probe: Probe = null  # Currently selected probe for camera focus
 var glow_material: CanvasItemMaterial  # Material for glow effects
 
+# Canvas layer for 2D UI elements
+var canvas_layer: CanvasLayer
+
 # References
 var parent_agent: AIAgent
 var parent_probe: Probe
@@ -46,7 +49,7 @@ var target_indicator: Sprite2D
 
 # HUD elements
 var hud_container: Control
-var hud_panel: Panel
+var hud_panel: PanelContainer
 var epsilon_bar: ProgressBar
 var qtable_chart: Control
 var recent_rewards_chart: Control
@@ -85,6 +88,15 @@ func _ready():
 	# Initialize glow material
 	setup_glow_material()
 	
+	# Create canvas layer for UI elements
+	canvas_layer = CanvasLayer.new()
+	canvas_layer.layer = 10  # Ensure it renders above the 3D scene
+	add_child(canvas_layer)
+	
+	# Set up draw signal connections for charts
+	qtable_chart = null  # Will be initialized in setup_hud_components
+	recent_rewards_chart = null  # Will be initialized in setup_hud_components
+	
 	# Create visual components
 	setup_visual_components()
 	
@@ -97,7 +109,6 @@ func _ready():
 	
 	# Check if debug visualization is enabled
 	enabled = ConfigManager.config.ai_show_debug_visuals
-	visible = enabled
 	
 	# Set process only if enabled
 	set_process(enabled)
@@ -111,26 +122,9 @@ func setup_glow_material():
 	glow_material.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
 	
 func setup_visual_components():
-	# Create labels for state information with background panels
-	state_label = create_label("State: ", Vector2(0, -120))
-	action_label = create_label("Action: ", Vector2(0, -90))
-	epsilon_label = create_label("Epsilon: ", Vector2(0, -60))
-	reward_label = create_label("Reward: ", Vector2(0, -30))
-	
-	# Add background panels to labels
-	add_background_to_label(state_label)
-	add_background_to_label(action_label)
-	add_background_to_label(epsilon_label)
-	add_background_to_label(reward_label)
-	
-	# Create metrics label (fixed to screen position) with background
-	metrics_label = Label.new()
-	metrics_label.add_theme_font_override("font", debug_font)
-	metrics_label.add_theme_font_size_override("font_size", text_size)
-	metrics_label.modulate = text_color
-	metrics_label.text = "Q-Learning Metrics:"
-	add_child(metrics_label)
-	add_background_to_label(metrics_label)
+	# Create a Node2D for the 3D world indicators
+	var world_indicators = Node2D.new()
+	add_child(world_indicators)
 	
 	# Create path visualization with increased width
 	planned_path = Line2D.new()
@@ -138,7 +132,7 @@ func setup_visual_components():
 	planned_path.default_color = path_color
 	if enable_glow:
 		planned_path.material = glow_material
-	add_child(planned_path)
+	world_indicators.add_child(planned_path)
 	
 	# Create exploration/exploitation indicator (larger)
 	exploration_indicator = Sprite2D.new()
@@ -146,11 +140,11 @@ func setup_visual_components():
 	exploration_indicator.position = Vector2(60, -90)  # Adjusted position
 	if enable_glow:
 		exploration_indicator.material = glow_material
-	add_child(exploration_indicator)
+	world_indicators.add_child(exploration_indicator)
 	
 	# Create reward indicator
 	reward_indicator = Node2D.new()
-	add_child(reward_indicator)
+	world_indicators.add_child(reward_indicator)
 	
 	# Create target indicator (larger with glow)
 	target_indicator = Sprite2D.new()
@@ -158,146 +152,244 @@ func setup_visual_components():
 	target_indicator.visible = false
 	if enable_glow:
 		target_indicator.material = glow_material
-	add_child(target_indicator)
-
-func add_background_to_label(label: Label):
-	# Create a panel as background for better visibility
-	var panel = Panel.new()
-	panel.show_behind_parent = true
-	panel.size = Vector2(label.size.x + 20, label.size.y + 10)
-	panel.position = Vector2(-10, -5)
-	panel.modulate = background_color
-	label.add_child(panel)
+	world_indicators.add_child(target_indicator)
 	
-	# Ensure label is on top
-	label.z_index = 1
+	# Create UI container for probe-specific information
+	var probe_info_container = PanelContainer.new()
+	probe_info_container.set_name("ProbeInfoContainer")
+	probe_info_container.position = Vector2(20, 80)
+	probe_info_container.self_modulate = background_color
+	probe_info_container.size = Vector2(300, 200)
+	canvas_layer.add_child(probe_info_container)
+	
+	var probe_info_vbox = VBoxContainer.new()
+	probe_info_vbox.add_theme_constant_override("separation", 10)
+	probe_info_container.add_child(probe_info_vbox)
+	
+	# Create labels for state information
+	state_label = Label.new()
+	state_label.add_theme_font_override("font", debug_font)
+	state_label.add_theme_font_size_override("font_size", text_size)
+	state_label.modulate = text_color
+	state_label.text = "State: "
+	probe_info_vbox.add_child(state_label)
+	
+	action_label = Label.new()
+	action_label.add_theme_font_override("font", debug_font)
+	action_label.add_theme_font_size_override("font_size", text_size)
+	action_label.modulate = text_color
+	action_label.text = "Action: "
+	probe_info_vbox.add_child(action_label)
+	
+	epsilon_label = Label.new()
+	epsilon_label.add_theme_font_override("font", debug_font)
+	epsilon_label.add_theme_font_size_override("font_size", text_size)
+	epsilon_label.modulate = text_color
+	epsilon_label.text = "Epsilon: "
+	probe_info_vbox.add_child(epsilon_label)
+	
+	reward_label = Label.new()
+	reward_label.add_theme_font_override("font", debug_font)
+	reward_label.add_theme_font_size_override("font_size", text_size)
+	reward_label.modulate = text_color
+	reward_label.text = "Reward: "
+	probe_info_vbox.add_child(reward_label)
+	
+	# Create metrics label in its own panel container
+	var metrics_container = PanelContainer.new()
+	metrics_container.set_name("MetricsContainer")
+	metrics_container.position = Vector2(20, 20)
+	metrics_container.self_modulate = background_color
+	canvas_layer.add_child(metrics_container)
+	
+	metrics_label = Label.new()
+	metrics_label.add_theme_font_override("font", debug_font)
+	metrics_label.add_theme_font_size_override("font_size", text_size)
+	metrics_label.modulate = text_color
+	metrics_label.text = "Q-Learning Metrics:"
+	metrics_container.add_child(metrics_label)
+
+# Not needed anymore as we're using PanelContainer for backgrounds
+func add_background_to_label(label: Label):
+	pass
 	
 func setup_hud_components():
 	# Create main HUD container (fixed to screen)
 	hud_container = Control.new()
 	hud_container.set_anchors_preset(Control.PRESET_FULL_RECT)
-	add_child(hud_container)
+	canvas_layer.add_child(hud_container)
 	
-	# Create HUD panel
-	hud_panel = Panel.new()
-	hud_panel.size = Vector2(300, 500)
-	hud_panel.position = Vector2(20, 120) # Position below metrics
-	hud_panel.modulate = Color(0.1, 0.1, 0.2, 0.8) # Semi-transparent dark blue
-	hud_container.add_child(hud_panel)
+	# Create HUD panel using a MarginContainer for proper layout
+	var margin_container = MarginContainer.new()
+	margin_container.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	margin_container.position = Vector2(-320, 20)  # Position in top-right corner
+	margin_container.size = Vector2(300, 500)
+	margin_container.add_theme_constant_override("margin_right", 20)
+	margin_container.add_theme_constant_override("margin_top", 20)
+	hud_container.add_child(margin_container)
 	
-	# Add title
+	# Add a PanelContainer for the background
+	hud_panel = PanelContainer.new()
+	hud_panel.self_modulate = Color(0.1, 0.1, 0.2, 0.8)  # Semi-transparent dark blue
+	margin_container.add_child(hud_panel)
+	
+	# Add a VBoxContainer for vertical layout
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 15)
+	hud_panel.add_child(vbox)
+	
+	# Add title with a PanelContainer for better visibility
+	var title_panel = PanelContainer.new()
+	title_panel.self_modulate = Color(0.15, 0.15, 0.3, 1.0)
+	vbox.add_child(title_panel)
+	
 	var title = Label.new()
 	title.text = "Q-LEARNING MONITOR"
 	title.add_theme_font_override("font", debug_font)
 	title.add_theme_font_size_override("font_size", text_size)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.modulate = highlight_color
-	title.position = Vector2(10, 10)
-	hud_panel.add_child(title)
+	title_panel.add_child(title)
 	
-	# Add epsilon progress bar
-	var epsilon_label = Label.new()
-	epsilon_label.text = "Exploration (ε):"
-	epsilon_label.add_theme_font_override("font", debug_font)
-	epsilon_label.add_theme_font_size_override("font_size", text_size * 0.75)
-	epsilon_label.position = Vector2(10, 50)
-	hud_panel.add_child(epsilon_label)
+	# Add epsilon progress bar section
+	var epsilon_section = VBoxContainer.new()
+	epsilon_section.add_theme_constant_override("separation", 5)
+	vbox.add_child(epsilon_section)
+	
+	var epsilon_label_ui = Label.new()
+	epsilon_label_ui.text = "Exploration (ε):"
+	epsilon_label_ui.add_theme_font_override("font", debug_font)
+	epsilon_label_ui.add_theme_font_size_override("font_size", text_size * 0.75)
+	epsilon_section.add_child(epsilon_label_ui)
 	
 	epsilon_bar = ProgressBar.new()
 	epsilon_bar.min_value = 0
 	epsilon_bar.max_value = 100
-	epsilon_bar.position = Vector2(10, 80)
-	epsilon_bar.size = Vector2(280, 30)
-	hud_panel.add_child(epsilon_bar)
+	epsilon_bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	epsilon_bar.custom_minimum_size = Vector2(0, 30)
+	epsilon_section.add_child(epsilon_bar)
 	
-	# Add learning phase indicator
+	# Add learning phase indicator with background panel
+	var phase_panel = PanelContainer.new()
+	phase_panel.self_modulate = Color(0.1, 0.1, 0.2, 0.9)
+	vbox.add_child(phase_panel)
+	
 	learning_phase_label = Label.new()
 	learning_phase_label.text = "Phase: Exploration"
 	learning_phase_label.add_theme_font_override("font", debug_font)
 	learning_phase_label.add_theme_font_size_override("font_size", text_size * 0.75)
-	learning_phase_label.position = Vector2(10, 120)
+	learning_phase_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	learning_phase_label.modulate = random_action_color
-	hud_panel.add_child(learning_phase_label)
+	phase_panel.add_child(learning_phase_label)
 	
 	# Add Q-table growth indicator
+	var qtable_section = VBoxContainer.new()
+	qtable_section.add_theme_constant_override("separation", 5)
+	vbox.add_child(qtable_section)
+	
 	var qtable_label = Label.new()
 	qtable_label.text = "Q-Table Size:"
 	qtable_label.add_theme_font_override("font", debug_font)
 	qtable_label.add_theme_font_size_override("font_size", text_size * 0.75)
-	qtable_label.position = Vector2(10, 160)
-	hud_panel.add_child(qtable_label)
+	qtable_section.add_child(qtable_label)
 	
-	qtable_chart = create_chart(Vector2(10, 190), Vector2(280, 60))
-	hud_panel.add_child(qtable_chart)
+	qtable_chart = Control.new()
+	qtable_chart.custom_minimum_size = Vector2(0, 60)
+	qtable_chart.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	
+	# Add background
+	var bg = ColorRect.new()
+	bg.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	bg.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	bg.color = Color(0.1, 0.1, 0.1, 0.5)
+	qtable_chart.add_child(bg)
+	
+	qtable_section.add_child(qtable_chart)
 	
 	# Add recent rewards chart
+	var rewards_section = VBoxContainer.new()
+	rewards_section.add_theme_constant_override("separation", 5)
+	vbox.add_child(rewards_section)
+	
 	var rewards_label = Label.new()
 	rewards_label.text = "Recent Rewards:"
 	rewards_label.add_theme_font_override("font", debug_font)
 	rewards_label.add_theme_font_size_override("font_size", text_size * 0.75)
-	rewards_label.position = Vector2(10, 260)
-	hud_panel.add_child(rewards_label)
+	rewards_section.add_child(rewards_label)
 	
-	recent_rewards_chart = create_chart(Vector2(10, 290), Vector2(280, 60))
-	hud_panel.add_child(recent_rewards_chart)
+	recent_rewards_chart = Control.new()
+	recent_rewards_chart.custom_minimum_size = Vector2(0, 60)
+	recent_rewards_chart.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	
-	# Add zoom controls
-	zoom_controls = Control.new()
-	zoom_controls.position = Vector2(10, 370)
-	hud_panel.add_child(zoom_controls)
+	# Add background
+	var rewards_bg = ColorRect.new()
+	rewards_bg.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	rewards_bg.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	rewards_bg.color = Color(0.1, 0.1, 0.1, 0.5)
+	recent_rewards_chart.add_child(rewards_bg)
+	
+	rewards_section.add_child(recent_rewards_chart)
+	
+	# Add camera controls section
+	var controls_section = VBoxContainer.new()
+	controls_section.add_theme_constant_override("separation", 10)
+	vbox.add_child(controls_section)
 	
 	var zoom_label = Label.new()
 	zoom_label.text = "Camera Controls:"
 	zoom_label.add_theme_font_override("font", debug_font)
 	zoom_label.add_theme_font_size_override("font_size", text_size * 0.75)
-	zoom_controls.add_child(zoom_label)
+	controls_section.add_child(zoom_label)
+	
+	zoom_controls = VBoxContainer.new()
+	zoom_controls.add_theme_constant_override("separation", 10)
+	controls_section.add_child(zoom_controls)
 	
 	focus_button = Button.new()
 	focus_button.text = "Focus Camera"
-	focus_button.position = Vector2(0, 30)
-	focus_button.size = Vector2(280, 40)
+	focus_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	focus_button.custom_minimum_size = Vector2(0, 40)
 	focus_button.pressed.connect(_on_focus_button_pressed)
 	zoom_controls.add_child(focus_button)
+	
+	var help_panel = PanelContainer.new()
+	help_panel.self_modulate = Color(0.2, 0.2, 0.3, 0.8)
+	zoom_controls.add_child(help_panel)
 	
 	var help_label = Label.new()
 	help_label.text = "Shortcuts: +/- to zoom, H to toggle HUD"
 	help_label.add_theme_font_override("font", debug_font)
 	help_label.add_theme_font_size_override("font_size", text_size * 0.6)
-	help_label.position = Vector2(0, 80)
-	zoom_controls.add_child(help_label)
+	help_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	help_panel.add_child(help_label)
 
-func create_chart(position: Vector2, size: Vector2) -> Control:
+func create_chart(parent: Control, size: Vector2) -> Control:
 	var chart = Control.new()
-	chart.position = position
-	chart.size = size
+	chart.custom_minimum_size = size
+	chart.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	
 	# Add background
 	var bg = ColorRect.new()
-	bg.size = size
+	bg.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	bg.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	bg.color = Color(0.1, 0.1, 0.1, 0.5)
 	chart.add_child(bg)
 	
+	parent.add_child(chart)
 	return chart
 
-func create_label(initial_text: String, offset: Vector2) -> Label:
+func create_label(initial_text: String) -> Label:
 	var label = Label.new()
 	label.add_theme_font_override("font", debug_font)
 	label.add_theme_font_size_override("font_size", text_size)
 	label.modulate = text_color
 	label.text = initial_text
-	label.position = offset
 	
-	# Make label outline for better visibility
+	# Add outline for better visibility
 	if enable_glow:
-		var shadow = Label.new()
-		shadow.add_theme_font_override("font", debug_font)
-		shadow.add_theme_font_size_override("font_size", text_size)
-		shadow.modulate = Color(0, 0, 0, 0.7)
-		shadow.text = initial_text
-		shadow.position = Vector2(2, 2)
-		shadow.z_index = -1
-		label.add_child(shadow)
+		label.add_theme_constant_override("outline_size", 2)
+		label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
 	
-	add_child(label)
 	return label
 
 func create_circle_texture(radius: int, color: Color) -> Texture2D:
@@ -355,13 +447,7 @@ func _process(delta):
 			update_hud_components()
 		return
 	
-	# Update label positions to follow probe with offset
-	update_label_positions()
-	
-	# Update metrics label position (fixed to screen)
-	metrics_label.global_position = metrics_position
-	
-	# Update visualization components
+	# Update visualization components in 3D space
 	update_exploration_indicator()
 	update_reward_indicator()
 	update_target_indicator()
@@ -385,14 +471,9 @@ func _physics_process(delta):
 	# Update planned path visualization
 	update_planned_path()
 
+# This function is no longer needed as labels are now in the canvas layer
 func update_label_positions():
-	# Position labels relative to probe
-	if parent_probe:
-		var base_pos = parent_probe.global_position + visualizer_offset
-		state_label.global_position = base_pos
-		action_label.global_position = base_pos + Vector2(0, 30)
-		epsilon_label.global_position = base_pos + Vector2(0, 60)
-		reward_label.global_position = base_pos + Vector2(0, 90)
+	pass
 
 func update_hud_components():
 	if not hud_container:
@@ -426,15 +507,13 @@ func update_hud_components():
 	# Update Q-table chart
 	if qtable_chart and metrics_data.has("q_table_size"):
 		qtable_chart.queue_redraw()
-		qtable_chart.draw.connect(func(): draw_qtable_chart())
 	
 	# Update rewards chart
 	if recent_rewards_chart:
 		recent_rewards_chart.queue_redraw()
-		recent_rewards_chart.draw.connect(func(): draw_rewards_chart())
 
 func draw_qtable_chart():
-	if not qtable_chart or not metrics_data.has("q_table_size"):
+	if not metrics_data.has("q_table_size"):
 		return
 		
 	# Draw background
@@ -745,10 +824,12 @@ func log_debug(message: String, level: String = "debug"):
 # Toggle visibility
 func set_debug_visibility(visible_state: bool):
 	enabled = visible_state
-	visible = enabled
 	set_process(enabled)
 	set_physics_process(enabled)
 	set_process_input(enabled)
+	
+	if canvas_layer:
+		canvas_layer.visible = enabled
 	
 	if hud_container:
 		hud_container.visible = visible_state and hud_visible
