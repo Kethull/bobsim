@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://d1k0gq8x0yqjv"]
+[gd_scene load_steps=7 format=3 uid="uid://d1k0gq8x0yqjv"]
 
 [ext_resource type="Script" path="res://probes/Probe.gd" id="1_prbgd"]
 [ext_resource type="Texture2D" path="res://icon.svg" id="2_iconsvg"]
 [ext_resource type="Script" path="res://ai/AIAgent.gd" id="3_aigdt"]
+[ext_resource type="Script" path="res://ai/AIDebugVisualizer.gd" id="4_aidebug"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_r12"]
 radius = 12.0
@@ -70,9 +71,11 @@ shape = SubResource("CircleShape2D_r200")
 [node name="MovementTrail" type="Line2D" parent="."]
 
 [node name="MiningLaser" type="Line2D" parent="."]
-
 [node name="AIAgent" type="Node" parent="."]
 script = ExtResource("3_aigdt")
+
+[node name="AIDebugVisualizer" type="Node2D" parent="AIAgent"]
+script = ExtResource("4_aidebug")
 
 [node name="EnergySystem" type="Node" parent="."]
 

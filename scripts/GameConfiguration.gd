@@ -59,6 +59,26 @@ class_name GameConfiguration
     "stay_alive": 0.02
 }
 
+# === AI Settings Configuration ===
+@export_group("AI Settings")
+# Time interval between AI updates in seconds
+@export var ai_update_interval_sec: float = 1.0
+# Enable detailed logging of AI learning progress
+@export var ai_debug_logging: bool = true
+# Show visual indicators for AI decisions and states
+@export var ai_show_debug_visuals: bool = true
+# Save Q-learning table to disk when an episode ends
+@export var q_learning_save_on_episode_end: bool = true
+# Load Q-learning table from disk when an episode starts
+@export var q_learning_load_on_episode_start: bool = true
+# Filename for saving/loading Q-learning table
+@export var q_learning_table_filename: String = "q_table_fallback.json"
+# Timeout in seconds for external AI requests
+@export var ai_request_timeout: float = 5.0
+# Whether to use external AI service instead of local Q-learning
+# CRITICAL: Must be false to avoid HTTP errors
+@export var use_external_ai: bool = false
+
 # === Visualization Configuration ===
 @export_group("Visualization")
 @export var screen_width: int = 1400
