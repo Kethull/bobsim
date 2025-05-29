@@ -70,8 +70,9 @@ func setup_particle_effects():
 	# Configure ambient resource particles
 	var material = ParticleProcessMaterial.new()
 	
-	material.emission.amount = int(20 * (current_amount / max_amount))
-	material.emission.rate = 10.0
+	particle_effect.amount = int(20 * (current_amount / max_amount))
+	# In Godot 4, we control emission rate through lifetime and other properties
+	# The lifetime is already set to 4.0 below
 	
 	# Circular emission around resource
 	material.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
@@ -95,7 +96,8 @@ func setup_particle_effects():
 	material.color = color_map.get(resource_type, Color.WHITE)
 	
 	# Lifetime and fading
-	material.lifetime = 4.0
+	# In Godot 4, lifetime needs to be set on the GPUParticles2D node, not the material
+	particle_effect.lifetime = 4.0
 	var gradient = Gradient.new()
 	gradient.add_point(0.0, Color.WHITE)
 	gradient.add_point(0.8, material.color)
@@ -177,7 +179,7 @@ func update_visual_state():
 	# Update particle count
 	var material = particle_effect.process_material as ParticleProcessMaterial
 	if material:
-		material.emission.amount = max(5, int(20 * amount_ratio))
+		particle_effect.amount = max(5, int(20 * amount_ratio))
 	
 	# Update glow intensity
 	var base_color = resource_sprite.modulate

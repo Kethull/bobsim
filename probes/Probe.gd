@@ -118,36 +118,25 @@ func setup_thruster_system():
 func configure_thruster_particles(thruster: GPUParticles2D, direction: Vector2):
 	var material = ParticleProcessMaterial.new()
 	
-	# Emission
-	material.emission.amount = 50
-	material.emission.rate = 50.0
-	
-	# Direction and velocity
+	# Configure particle material
 	material.direction = Vector3(direction.x, direction.y, 0)
 	material.initial_velocity_min = 50.0
 	material.initial_velocity_max = 150.0
-	material.angular_velocity_min = -180.0
-	material.angular_velocity_max = 180.0
-	
-	# Scale and color
-	material.scale_min = 0.3
-	material.scale_max = 1.2
 	material.color = Color.CYAN
 	
-	# Add color ramp for temperature effect
+	# Create color gradient
 	var gradient = Gradient.new()
 	gradient.add_point(0.0, Color.WHITE)
-	gradient.add_point(0.3, Color.CYAN)
-	gradient.add_point(0.7, Color.BLUE)
+	gradient.add_point(0.5, Color.CYAN)
 	gradient.add_point(1.0, Color.TRANSPARENT)
 	
 	var texture = GradientTexture1D.new()
 	texture.gradient = gradient
 	material.color_ramp = texture
 	
-	# Lifetime
-	material.lifetime = 2.0
-	
+	# Configure particle node
+	thruster.amount = 40
+	thruster.lifetime = 1.5
 	thruster.process_material = material
 	thruster.emitting = false
 
@@ -486,12 +475,8 @@ func calculate_collision_risk() -> float:
 			continue
 		
 		var distance = global_position.distance_to(body.global_position)
-		var relative_velocity = (linear_velocity - body.linear_velocity).length()
-		
-		if distance > 0 and relative_velocity > 0:
-			var time_to_collision = distance / relative_velocity
-			if time_to_collision < 10.0:  # 10 seconds
-				risk += 1.0 / time_to_collision
+		if distance < 50.0:  # Close proximity threshold
+			risk += (50.0 - distance) / 50.0
 	
 	return min(risk, 1.0)
 

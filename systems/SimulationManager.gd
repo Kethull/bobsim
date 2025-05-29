@@ -11,7 +11,7 @@ const GameResource = preload("res://resources/Resource.gd")
 @onready var solar_system: Node2D = get_parent().get_node("SolarSystem")
 @onready var probe_manager: Node2D = $"../ProbeManager"
 @onready var resource_manager: Node2D = $"../ResourceManager"
-@onready var ui_system: Control = $"../UI"
+@onready var ui_system: CanvasLayer = $"../UI"
 @onready var camera: Camera2D = $"../Camera2D"
 
 var current_step: int = 0
@@ -265,7 +265,7 @@ func start_new_episode():
 	episode_count += 1
 	current_step = 0
 	total_resources_mined = 0.0
-	simulation_start_time = Time.get_time_dict_from_system()["unix"]
+	simulation_start_time = Time.get_unix_time_from_system()
 	
 	# Clear existing probes
 	clear_all_probes()
@@ -360,7 +360,7 @@ func end_episode(reason: String):
 		"reason": reason,
 		"resources_mined": total_resources_mined,
 		"final_probe_count": get_tree().get_nodes_in_group("probes").size(),
-		"duration_seconds": Time.get_time_dict_from_system()["unix"] - simulation_start_time
+		"duration_seconds": Time.get_unix_time_from_system() - simulation_start_time
 	}
 	
 	print("Episode ", episode_count, " ended: ", reason)
@@ -413,8 +413,8 @@ func create_save_data() -> SimulationSaveData:
 		probe_data.probe_position = probe.global_position
 		probe_data.probe_velocity = probe.linear_velocity
 		probe_data.energy_level = probe.current_energy
-		# probe.generation is not part of ProbeData
-		# probe.is_alive is not part of ProbeData
+		probe_data.generation = probe.generation # Add generation field
+		probe_data.is_alive = probe.is_alive # Add alive state
 		probe_data.resources_carried = [] # Assuming resources are tracked globally, not per probe inventory for save
 		probe_data.ai_state = probe.current_task
 		if probe.current_target_id != -1: # Check if there is a target
@@ -448,12 +448,29 @@ func load_simulation(save_data: SimulationSaveData):
 	var probe_scene = preload("res://probes/Probe.tscn")
 	for probe_data in save_data.probes:
 		var probe = probe_scene.instantiate()
-		probe.probe_id = probe_data.id
-		probe.global_position = probe_data.position
-		probe.linear_velocity = probe_data.velocity
-		probe.current_energy = probe_data.energy
-		probe.generation = probe_data.generation
-		probe.is_alive = probe_data.is_alive
+		
+		# Convert ID from string to int with proper validation
+		probe.probe_id = int(probe_data.id) if probe_data.id.is_valid_int() else 0
+		
+		# Set position and velocity
+		probe.global_position = probe_data.probe_position
+		probe.linear_velocity = probe_data.probe_velocity
+		
+		# Set energy level
+		probe.current_energy = probe_data.energy_level
+		
+		# Set generation with fallback
+		probe.generation = probe_data.generation if "generation" in probe_data else 0
+		
+		# Set alive state with fallback
+		probe.is_alive = probe_data.is_alive if "is_alive" in probe_data else true
+		
+		# Set current task with fallback
+		probe.current_task = probe_data.ai_state if probe_data.ai_state else "idle"
+		
+		# Set target if available
+		if probe_data.target_celestial_body_id and probe_data.target_celestial_body_id.is_valid_int():
+			probe.current_target_id = int(probe_data.target_celestial_body_id)
 		
 		probe_manager.add_child(probe)
 		probe.add_to_group("probes")
