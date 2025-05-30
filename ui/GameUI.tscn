@@ -1,0 +1,70 @@
+[gd_scene load_steps=2 format=3 uid="uid://c8yvwpvkn4qxs"]
+
+[ext_resource type="Script" path="res://ui/ModernUI.gd" id="1_yjnkm"]
+
+[node name="GameUI" type="CanvasLayer"]
+script = ExtResource("1_yjnkm")
+
+[node name="UIContainer" type="MarginContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UIContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="LeftColumn" type="VBoxContainer" parent="UIContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.4
+theme_override_constants/separation = 10
+
+[node name="ProbeListPanel" type="Panel" parent="UIContainer/HBoxContainer/LeftColumn"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="SelectedProbePanel" type="Panel" parent="UIContainer/HBoxContainer/LeftColumn"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 1.5
+
+[node name="RightColumn" type="VBoxContainer" parent="UIContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.6
+theme_override_constants/separation = 10
+
+[node name="TopSection" type="VBoxContainer" parent="UIContainer/HBoxContainer/RightColumn"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="SystemStatsPanel" type="Panel" parent="UIContainer/HBoxContainer/RightColumn/TopSection"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MiddleSection" type="VBoxContainer" parent="UIContainer/HBoxContainer/RightColumn"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="DebugPanel" type="Panel" parent="UIContainer/HBoxContainer/RightColumn/MiddleSection"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="BottomSection" type="VBoxContainer" parent="UIContainer/HBoxContainer/RightColumn"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 1.5
+theme_override_constants/separation = 10
+
+[node name="QLearningMonitor" type="Panel" parent="UIContainer/HBoxContainer/RightColumn/BottomSection"]
+layout_mode = 2
+size_flags_vertical = 3
